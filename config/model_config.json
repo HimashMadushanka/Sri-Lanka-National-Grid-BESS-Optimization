@@ -1,0 +1,28 @@
+{
+    "battery": {
+        "power_cost_usd_per_kw": 250,
+        "energy_cost_usd_per_kwh": 250,
+        "annual_om_usd_per_kw_year": 8,
+        "round_trip_efficiency": 0.90,
+        "duration_hours": 4,
+        "lifetime_years": 15,
+        "discount_rate": 0.08,
+        "minimum_power_mw": 5,
+        "maximum_power_per_site_mw": 100,
+        "maximum_number_of_sites": 5
+    },
+
+    "optimization": {
+        "curtailment_penalty_usd_per_mwh": 40,
+        "peak_reduction_value_usd_per_mw_year": 50000,
+        "maximum_total_power_mw": 300,
+        "initial_soc_fraction": 0.50,
+        "time_step_hours": 1,
+        "profile_days_represented": 365
+    },
+
+    "graph": {
+        "centrality_weight": 0.5,
+        "solar_distance_weight": 0.5
+    }
+}
