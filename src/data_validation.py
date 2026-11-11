@@ -17,7 +17,6 @@ REQUIRED_COLUMNS = {
     ]
 }
 
-
 def read_and_validate(path, dataset_name):
     df = pd.read_csv(path)
 

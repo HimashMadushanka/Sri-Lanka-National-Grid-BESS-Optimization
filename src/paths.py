@@ -39,5 +39,3 @@ def create_project_directories():
 
 if __name__ == "__main__":
     create_project_directories()
-
-
