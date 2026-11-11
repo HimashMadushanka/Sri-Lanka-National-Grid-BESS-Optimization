@@ -63,3 +63,21 @@ def download_nasa_power(
     print(f"Downloaded NASA data: {output_path}")
 
     return df
+if __name__ == "__main__":
+
+    output = Path(
+        "datasets/raw/solar/nasa_power_hourly/colombo.csv"
+    )
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+
+    df = download_nasa_power(
+        latitude=6.9271,
+        longitude=79.8612,
+        start_date="20250101",
+        end_date="20250131",
+        output_path=output
+    )
+
+    print(df.head())
+    print("Total records:", len(df))
