@@ -1,0 +1,10 @@
+dataset,records,columns,missing_cells
+ceb_base_case_solar_and_storage_additions_2025_2044.csv,20,15,11
+ceb_electricity_sales_by_distribution_division_2024_2025.csv,21,9,0
+ceb_existing_renewable_capacity_as_at_2023_12_31.csv,10,9,0
+ceb_historical_electricity_demand_2009_2023.csv,15,12,0
+ceb_installed_capacity_by_owner_and_type_2024_2025.csv,12,9,0
+ceb_net_generation_by_owner_and_source_2024_2025.csv,14,9,0
+ceb_rooftop_solar_scheme_exports_2024_2025.csv,5,11,0
+ceb_summary_statistics_2024_2025.csv,19,8,0
+siyambalanduwa_solar_park_reference_record.csv,1,12,3

@@ -15,7 +15,7 @@ SOLAR = RAW / "solar"
 NASA = SOLAR / "nasa_power_hourly"
 ELECTRICITY = RAW / "electricity"
 
-NOTEBOOKS = ROOT / "notebooks"
+NOTEBOOKS = ROOT / "notebook"
 CONFIG = ROOT / "config"
 
 RESULTS = ROOT / "results"
