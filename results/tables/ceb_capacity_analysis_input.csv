@@ -1,0 +1,13 @@
+owner,plant_type,number_of_stations_2024,number_of_stations_2025,installed_capacity_mw_2024,installed_capacity_mw_2025,source_document,source_url,source_location
+CEB,Total,29,28,3338,3261,CEB Statistical Digest 2025,https://ceb.lk/front_img/img_reports/1783568926SD-2025-Finalized-(Web-Edition).pdf,"Generation Statistics, page 2"
+CEB,Major Hydro,19,19,1533,1530,CEB Statistical Digest 2025,https://ceb.lk/front_img/img_reports/1783568926SD-2025-Finalized-(Web-Edition).pdf,"Generation Statistics, page 2"
+CEB,Thermal (Oil),8,7,801,727,CEB Statistical Digest 2025,https://ceb.lk/front_img/img_reports/1783568926SD-2025-Finalized-(Web-Edition).pdf,"Generation Statistics, page 2"
+CEB,Thermal (Coal),1,1,900,900,CEB Statistical Digest 2025,https://ceb.lk/front_img/img_reports/1783568926SD-2025-Finalized-(Web-Edition).pdf,"Generation Statistics, page 2"
+CEB,NCRE (Wind),1,1,104,104,CEB Statistical Digest 2025,https://ceb.lk/front_img/img_reports/1783568926SD-2025-Finalized-(Web-Edition).pdf,"Generation Statistics, page 2"
+IPP,Total,348,389,1313,1554,CEB Statistical Digest 2025,https://ceb.lk/front_img/img_reports/1783568926SD-2025-Finalized-(Web-Edition).pdf,"Generation Statistics, page 2"
+IPP,Thermal (Oil),2,2,482,582,CEB Statistical Digest 2025,https://ceb.lk/front_img/img_reports/1783568926SD-2025-Finalized-(Web-Edition).pdf,"Generation Statistics, page 2"
+IPP,NCRE (Mini Hydro),217,221,432,437,CEB Statistical Digest 2025,https://ceb.lk/front_img/img_reports/1783568926SD-2025-Finalized-(Web-Edition).pdf,"Generation Statistics, page 2"
+IPP,NCRE (Wind),19,19,163,163,CEB Statistical Digest 2025,https://ceb.lk/front_img/img_reports/1783568926SD-2025-Finalized-(Web-Edition).pdf,"Generation Statistics, page 2"
+IPP,NCRE (Other),15,16,63,64,CEB Statistical Digest 2025,https://ceb.lk/front_img/img_reports/1783568926SD-2025-Finalized-(Web-Edition).pdf,"Generation Statistics, page 2"
+IPP,NCRE (Grid Connected Solar),95,131,173,307,CEB Statistical Digest 2025,https://ceb.lk/front_img/img_reports/1783568926SD-2025-Finalized-(Web-Edition).pdf,"Generation Statistics, page 2"
+All,Total,377,417,4651,4814,CEB Statistical Digest 2025,https://ceb.lk/front_img/img_reports/1783568926SD-2025-Finalized-(Web-Edition).pdf,"Generation Statistics, page 2"
