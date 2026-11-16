@@ -10,6 +10,10 @@ PROCESSED = DATA / "processed"
 TEMPLATES = DATA / "templates"
 
 OFFICIAL = RAW / "official_report_csv"
+if not OFFICIAL.exists() or not any(OFFICIAL.glob("*.csv")):
+    _alt_official = RAW / "data" / "raw" / "official_report_csv"
+    if _alt_official.exists() and any(_alt_official.glob("*.csv")):
+        OFFICIAL = _alt_official
 GIS = RAW / "gis"
 SOLAR = RAW / "solar"
 NASA = SOLAR / "nasa_power_hourly"

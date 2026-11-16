@@ -269,7 +269,7 @@ def optimize_bess(profile, candidates, config):
         )
 
         dispatch_rows.append({
-            "timestamp": profile.loc[t, "timestamp"],
+            "timestamp": profile.loc[t, "timestamp"] if "timestamp" in profile.columns else t,
             "solar_mw": profile.loc[t, "solar_mw"],
             "demand_mw": profile.loc[t, "demand_mw"],
             "solar_surplus_mw": surplus[t],
@@ -279,9 +279,19 @@ def optimize_bess(profile, candidates, config):
             "residual_mw": pyo.value(m.residual[t])
         })
 
-    dispatch = pd.DataFrame(dispatch_rows)
+    dispatch = pd.DataFrame(
+        dispatch_rows,
+        columns=[
+            "timestamp", "solar_mw", "demand_mw", "solar_surplus_mw",
+            "solar_curtailment_mw", "battery_charge_mw", "battery_discharge_mw",
+            "residual_mw"
+        ]
+    )
 
-    selected_sites = pd.DataFrame(selected)
+    selected_sites = pd.DataFrame(
+        selected,
+        columns=["bus_id", "power_mw", "energy_mwh", "site_cost_factor"]
+    )
 
     return {
         "selected_sites": selected_sites,
