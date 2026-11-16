@@ -1,1 +1,5 @@
 scenario,cost_multiplier,curtailment_penalty_usd_per_mwh,objective_value_usd,number_of_sites,total_power_mw,total_energy_mwh,peak_residual_mw,curtailment_mwh
+Low battery cost (-20%),0.8,40,-6.821210263296962e-08,0,0.0,0.0,2649.9999999999986,0.0
+Base case,1.0,40,0.0,0,0.0,0.0,2650.0,0.0
+High battery cost (+20%),1.2,40,4.547473508864641e-08,0,0.0,0.0,2650.000000000001,0.0
+High curtailment penalty (2x),1.0,80,0.0,0,0.0,0.0,2650.0,0.0
