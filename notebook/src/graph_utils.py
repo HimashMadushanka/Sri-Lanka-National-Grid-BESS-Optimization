@@ -65,6 +65,7 @@ def add_solar_distance(graph, metrics, solar_plants):
         ]
         result.at[index, "solar_distance_km"] = min(distances)
 
+    result["distance_to_solar_km"] = result["solar_distance_km"]
     return result
 
 

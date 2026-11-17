@@ -1,0 +1,2 @@
+selected_bess_sites,total_bess_power_mw,total_bess_energy_mwh,baseline_solar_surplus_mwh_per_sample,remaining_curtailment_mwh_per_sample,curtailment_reduction_percent,baseline_peak_residual_mw,optimized_peak_residual_mw,peak_reduction_percent,battery_charging_mwh_per_sample,battery_discharging_mwh_per_sample
+1,50.0,200.0,0.0,0.0,,2650.0,2600.0,1.8867924528301887,1722.222222222219,1550.0

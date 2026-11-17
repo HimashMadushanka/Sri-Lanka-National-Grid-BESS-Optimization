@@ -1,0 +1,2 @@
+bus_id,power_mw,energy_mwh,site_cost_factor,betweenness_centrality,closeness_centrality,distance_to_solar_km
+BIYAGAMA,50.0,200.0,0.7838975108983707,0.3648604269293925,0.4027777777777778,11.964150555740765
