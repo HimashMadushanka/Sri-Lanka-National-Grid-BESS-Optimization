@@ -1,0 +1,10 @@
+category,item,voltage_kv,primary_metric,notes
+Top Candidate Substation,Rank #1: BIYAGAMA,220 kV,Site Score: 0.8602,"Betweenness: 0.365, Solar Distance: 12.0 km"
+Top Candidate Substation,Rank #2: NEW_ANURADHAPURA,220 kV,Site Score: 0.8099,"Betweenness: 0.266, Solar Distance: 0.0 km"
+Top Candidate Substation,Rank #3: PANNIPITIYA,220 kV,Site Score: 0.7854,"Betweenness: 0.245, Solar Distance: 0.0 km"
+Top Candidate Substation,Rank #4: KOTMALE,220 kV,Site Score: 0.7122,"Betweenness: 0.429, Solar Distance: 53.3 km"
+Top Candidate Substation,Rank #5: MONARAGALA,132 kV,Site Score: 0.5916,"Betweenness: 0.079, Solar Distance: 0.0 km"
+Sensitivity Scenario,Low battery cost (-20%),All 220/132 kV,Objective Cost: $2.48M,"Cost Mult: 0.8, Curtailment Penalty: $40/MWh, Curtailment: 0.0 MWh"
+Sensitivity Scenario,Base case,All 220/132 kV,Objective Cost: $3.62M,"Cost Mult: 1.0, Curtailment Penalty: $40/MWh, Curtailment: 0.0 MWh"
+Sensitivity Scenario,High battery cost (+20%),All 220/132 kV,Objective Cost: $4.77M,"Cost Mult: 1.2, Curtailment Penalty: $40/MWh, Curtailment: 0.0 MWh"
+Sensitivity Scenario,High curtailment penalty (2x),All 220/132 kV,Objective Cost: $3.62M,"Cost Mult: 1.0, Curtailment Penalty: $80/MWh, Curtailment: 0.0 MWh"

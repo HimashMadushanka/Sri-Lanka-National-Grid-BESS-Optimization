@@ -1,6 +1,16 @@
 from pathlib import Path
+import sys
 
-ROOT = Path(__file__).resolve().parents[1]
+def _find_project_root(start: Path) -> Path:
+    current = start.resolve()
+    for parent in [current, *current.parents]:
+        if (parent / "datasets").is_dir() and (parent / "notebook").is_dir():
+            return parent
+    return current.parents[1]
+
+ROOT = _find_project_root(Path(__file__))
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 DATA = ROOT / "datasets"
 
@@ -10,10 +20,6 @@ PROCESSED = DATA / "processed"
 TEMPLATES = DATA / "templates"
 
 OFFICIAL = RAW / "official_report_csv"
-if not OFFICIAL.exists() or not any(OFFICIAL.glob("*.csv")):
-    _alt_official = RAW / "data" / "raw" / "official_report_csv"
-    if _alt_official.exists() and any(_alt_official.glob("*.csv")):
-        OFFICIAL = _alt_official
 GIS = RAW / "gis"
 SOLAR = RAW / "solar"
 NASA = SOLAR / "nasa_power_hourly"

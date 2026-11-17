@@ -8,11 +8,12 @@
         "lifetime_years": 15,
         "discount_rate": 0.08,
         "minimum_power_mw": 5,
-        "maximum_power_per_site_mw": 100,
+        "maximum_power_per_site_mw": 50,
         "maximum_number_of_sites": 5
     },
 
     "optimization": {
+        "target_total_power_mw": 50,
         "curtailment_penalty_usd_per_mwh": 40,
         "peak_reduction_value_usd_per_mw_year": 50000,
         "maximum_total_power_mw": 300,
