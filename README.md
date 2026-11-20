@@ -140,10 +140,10 @@ To assess investment robustness, four sensitivity scenarios were evaluated acros
 
 ## 📊 Verified Visualizations Gallery
 
-*Every image below is an authentic, high-resolution figure generated directly by the project code in `results/`.*
+*All figures below are authentic, high-resolution graphics generated directly by the project scripts and stored in `results/`.*
 
 ### 1. Optimal Geographic BESS Siting Map (Sri Lanka Grid)
-> **Asset Path**: [`results/maps/optimal_bess_location_map.png`](results/maps/optimal_bess_location_map.png) (244 KB)  
+> **Asset Path**: [`results/maps/optimal_bess_location_map.png`](results/maps/optimal_bess_location_map.png)  
 > High-resolution (300 DPI) geospatial transmission network map of Sri Lanka featuring full coastline geometry, 220 kV (red) and 132 kV (blue) transmission lines, landmark regional cities, glowing star marker at `BIYAGAMA`, annotated technical specs card, and an enlarged Western Province Metro Inset panel.
 
 <div align="center">
@@ -152,19 +152,9 @@ To assess investment robustness, four sensitivity scenarios were evaluated acros
 
 ---
 
-### 2. CEB Long-Term Plan Benchmark: Solar Additions vs. BESS Installations (2025–2044)
-> **Asset Path**: [`results/graphs/ceb_planned_solar_storage_additions.png`](results/graphs/ceb_planned_solar_storage_additions.png) (150 KB)  
-> Dual-axis bar chart comparing the official **CEB Long-Term Generation Expansion Plan (LTGEP 2025–2044 Base Case)** planned grid-connected solar additions (MW, left axis) against planned utility-scale BESS power additions (MW, right axis).
-
-<div align="center">
-  <img src="results/graphs/ceb_planned_solar_storage_additions.png" alt="CEB Long-Term Plan Additions" width="850"/>
-</div>
-
----
-
-### 3. Sri Lanka High-Voltage Transmission Network Topology
-> **Asset Path**: [`results/graphs/transmission_network.png`](results/graphs/transmission_network.png) (446 KB)  
-> Network graph of 30 substations and 39 high-voltage transmission lines constructed with NetworkX from CEB GIS data, highlighting the 220 kV transmission backbone and 132 kV regional connections.
+### 2. Sri Lanka High-Voltage Transmission Network Topology
+> **Asset Path**: [`results/graphs/transmission_network.png`](results/graphs/transmission_network.png)  
+> Network graph of 30 substations and 39 high-voltage transmission lines constructed with NetworkX from CEB GIS data, highlighting the topological connectivity of the national power system.
 
 <div align="center">
   <img src="results/graphs/transmission_network.png" alt="Sri Lanka Transmission Topology" width="850"/>
@@ -172,18 +162,8 @@ To assess investment robustness, four sensitivity scenarios were evaluated acros
 
 ---
 
-### 4. Candidate Substation Evaluation: Centrality vs. Solar Proximity
-> **Asset Path**: [`results/graphs/substation_evaluation_tradeoff.png`](results/graphs/substation_evaluation_tradeoff.png) (297 KB)  
-> Multi-criteria scatter plot showing betweenness centrality versus solar farm distance. Marker size corresponds to nominal voltage level (kV) and marker color reflects composite site score. Top candidates are labeled.
-
-<div align="center">
-  <img src="results/graphs/substation_evaluation_tradeoff.png" alt="Centrality vs Solar Distance Tradeoff" width="850"/>
-</div>
-
----
-
-### 5. Multi-Criteria Candidate Siting Ranking
-> **Asset Path**: [`results/graphs/candidate_bess_sites.png`](results/graphs/candidate_bess_sites.png) (162 KB)  
+### 3. Multi-Criteria Candidate Siting Ranking
+> **Asset Path**: [`results/graphs/candidate_bess_sites.png`](results/graphs/candidate_bess_sites.png)  
 > Bar chart ranking all top eligible grid substations by composite site score, confirming Biyagama's #1 position (0.8602).
 
 <div align="center">
@@ -192,8 +172,8 @@ To assess investment robustness, four sensitivity scenarios were evaluated acros
 
 ---
 
-### 6. Substation Betweenness Centrality Distribution
-> **Asset Path**: [`results/graphs/betweenness_centrality.png`](results/graphs/betweenness_centrality.png) (166 KB)  
+### 4. Substation Betweenness Centrality Distribution
+> **Asset Path**: [`results/graphs/betweenness_centrality.png`](results/graphs/betweenness_centrality.png)  
 > Graph-theoretic betweenness centrality distribution identifying transmission bottlenecks across Sri Lanka's power system.
 
 <div align="center">
@@ -202,8 +182,8 @@ To assess investment robustness, four sensitivity scenarios were evaluated acros
 
 ---
 
-### 7. Hourly Gross Demand vs. Solar PV Generation Profile
-> **Asset Path**: [`results/graphs/solar_vs_demand.png`](results/graphs/solar_vs_demand.png) (407 KB)  
+### 5. Hourly Gross Demand vs. Solar PV Generation Profile
+> **Asset Path**: [`results/graphs/solar_vs_demand.png`](results/graphs/solar_vs_demand.png)  
 > Full 744-hour operational timeseries illustrating electricity demand (peaking at 2,650 MW) contrasted with daytime solar PV generation (peaking at 300 MW).
 
 <div align="center">
@@ -212,8 +192,8 @@ To assess investment robustness, four sensitivity scenarios were evaluated acros
 
 ---
 
-### 8. Battery Fleet Charging & Discharging Operational Dynamics
-> **Asset Path**: [`results/graphs/battery_charge_discharge.png`](results/graphs/battery_charge_discharge.png) (503 KB)  
+### 6. Battery Fleet Charging & Discharging Operational Dynamics
+> **Asset Path**: [`results/graphs/battery_charge_discharge.png`](results/graphs/battery_charge_discharge.png)  
 > Synchronized 744-hour dispatch timeseries showing automated battery charging during solar surplus hours (10:00–14:00) and sustained discharging during evening peak demand (18:00–22:00).
 
 <div align="center">
@@ -222,8 +202,8 @@ To assess investment robustness, four sensitivity scenarios were evaluated acros
 
 ---
 
-### 9. Solar Energy Curtailment Mitigation
-> **Asset Path**: [`results/graphs/solar_curtailment.png`](results/graphs/solar_curtailment.png) (116 KB)  
+### 7. Solar Energy Curtailment Mitigation
+> **Asset Path**: [`results/graphs/solar_curtailment.png`](results/graphs/solar_curtailment.png)  
 > Post-optimization solar curtailment profile confirming total absorption (0.00 MWh curtailment) across the entire dispatch window.
 
 <div align="center">
@@ -232,22 +212,12 @@ To assess investment robustness, four sensitivity scenarios were evaluated acros
 
 ---
 
-### 10. Optimal Battery Power & Energy Capacity Sizing
-> **Asset Path**: [`results/graphs/optimal_bess_sizing.png`](results/graphs/optimal_bess_sizing.png) (96 KB)  
+### 8. Optimal Battery Power & Energy Capacity Sizing
+> **Asset Path**: [`results/graphs/optimal_bess_sizing.png`](results/graphs/optimal_bess_sizing.png)  
 > Optimal sizing decision plot verifying the selection of 50.0 MW power capacity and 200.0 MWh energy capacity at Biyagama.
 
 <div align="center">
   <img src="results/graphs/optimal_bess_sizing.png" alt="Optimal Battery Sizing" width="850"/>
-</div>
-
----
-
-### 11. Sensitivity Analysis Across Technology Costs & Curtailment Penalties
-> **Asset Path**: [`results/sensitivity/battery_sensitivity.png`](results/sensitivity/battery_sensitivity.png) (262 KB)  
-> Dual-panel sensitivity response evaluating total battery investment, objective cost, and capacity sizing stability across scenario sweeps.
-
-<div align="center">
-  <img src="results/sensitivity/battery_sensitivity.png" alt="BESS Sensitivity Analysis" width="850"/>
 </div>
 
 ---
