@@ -222,25 +222,6 @@ To assess investment robustness, four sensitivity scenarios were evaluated acros
 
 ---
 
-## 🗂️ Notebook Execution Pipeline
-
-The research pipeline comprises 11 reproducible, self-contained Jupyter notebooks tested end-to-end:
-
-| # | Notebook File | Objective & Method | Generated Assets |
-|---|:---|:---|:---|
-| **00** | [`00_Project_Setup.ipynb`](notebook/00_Project_Setup.ipynb) | Directory initialization, template generation, and CEB data schema verification | `datasets/templates/*.csv` |
-| **01** | [`01_Official_Data_Collection_and_EDA.ipynb`](notebook/01_Official_Data_Collection_and_EDA.ipynb) | Exploratory analysis of CEB capacity, generation, demand, and LTGEP additions | `results/graphs/ceb_planned_solar_storage_additions.png`, `results/tables/official_data_inventory.csv` |
-| **02** | [`02_Data_Cleaning_and_Validation.ipynb`](notebook/02_Data_Cleaning_and_Validation.ipynb) | Geospatial coordinate cleaning, substation validation, and hourly demand synthesis | `datasets/processed/system_hourly_profile.csv`, `datasets/processed/optimization_profile.csv` |
-| **03** | [`03_Solar_Resource_Analysis.ipynb`](notebook/03_Solar_Resource_Analysis.ipynb) | NASA POWER hourly irradiance analysis across 10 regional utility-scale solar sites | Diurnal solar capacity factors and plant irradiance statistics |
-| **04** | [`4_Grid_Network_Construction.ipynb`](notebook/4_Grid_Network_Construction.ipynb) | NetworkX topological transmission graph formulation (30 nodes, 39 edges) | `results/graphs/transmission_network.png`, `datasets/processed/grid_nodes.csv`, `grid_edges.csv` |
-| **05** | [`05_Graph_Theory_Analysis.ipynb`](notebook/05_Graph_Theory_Analysis.ipynb) | Betweenness, closeness, and degree centrality computation | `results/graphs/betweenness_centrality.png`, `datasets/processed/graph_theory_metrics.csv` |
-| **06** | [`06_BESS_Candidate_Site_Selection.ipynb`](notebook/06_BESS_Candidate_Site_Selection.ipynb) | Multi-criteria scoring, geodesic solar distance calculation, and candidate ranking | `results/graphs/candidate_bess_sites.png`, `datasets/processed/candidate_bess_sites.csv` |
-| **07** | [`07_BESS_Optimal_Placement_and_Sizing.ipynb`](notebook/07_BESS_Optimal_Placement_and_Sizing.ipynb) | Pyomo MILP formulation and HiGHS solver execution (50 MW / 200 MWh at Biyagama) | `results/optimization/optimal_bess_locations.csv`, `battery_dispatch_results.csv`, `optimization_summary.csv` |
-| **08** | [`08_Optimization_Results_and_Visualization.ipynb`](notebook/08_Optimization_Results_and_Visualization.ipynb) | High-resolution dispatch plotting, GIS map generation, and CEB benchmark comparison | `results/maps/optimal_bess_location_map.png`, `results/graphs/*.png` |
-| **09** | [`09_Sensitivity_Analysis.ipynb`](notebook/09_Sensitivity_Analysis.ipynb) | Robustness checks across $\\pm 20\\%$ battery CAPEX and $2\\times$ curtailment penalty sweeps | `results/sensitivity/battery_sensitivity.png`, `results/sensitivity/sensitivity_results.csv` |
-| **10** | [`10_Final_Research_Results.ipynb`](notebook/10_Final_Research_Results.ipynb) | Executive synthesis, centrality trade-off scatter plot, and consolidated research findings | `results/tables/final_research_summary.csv`, `results/graphs/substation_evaluation_tradeoff.png` |
-
----
 
 ## 🚀 Quickstart Guide
 
