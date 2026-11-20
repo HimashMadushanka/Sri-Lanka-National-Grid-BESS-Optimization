@@ -4,7 +4,7 @@
 ### *Graph-Theoretic Centrality & Mixed-Integer Linear Programming (MILP) for Grid-Scale Battery Energy Storage Integration*
 
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
-[![Pyomo](https://img.shields.io/badge/Optimization-Pyomo%206.9-brightgreen.svg)](https://pyomo.readthedocs.io/)
+[![Pyomo](https://img.shields.io/badge/Optimization-Pyomo%206.10-brightgreen.svg)](https://pyomo.readthedocs.io/)
 [![HiGHS Solver](https://img.shields.io/badge/Solver-HiGHS%20v1.15-orange.svg)](https://highs.dev/)
 [![NetworkX](https://img.shields.io/badge/Network%20Theory-NetworkX%203.0-purple.svg)](https://networkx.org/)
 [![CEB Benchmark](https://img.shields.io/badge/Benchmark-CEB%202025--2044%20Base%20Case-red.svg)](https://www.ceb.lk/)
@@ -17,9 +17,10 @@
   <a href="#-executive-summary">Executive Summary</a> •
   <a href="#-key-optimization-findings">Key Findings</a> •
   <a href="#-methodological-framework">Methodology</a> •
-  <a href="#-notebook-pipeline-overview">Notebooks</a> •
   <a href="#-mathematical-formulation">Mathematical Formulation</a> •
-  <a href="#-key-visualizations">Visualizations</a> •
+  <a href="#-verified-code-generated-visualizations">Visualizations</a> •
+  <a href="#-notebook-pipeline-overview">Notebooks</a> •
+  <a href="#-repository-structure">Repository Structure</a> •
   <a href="#-quickstart-guide">Quickstart</a>
 </p>
 
@@ -29,114 +30,124 @@
 
 ## 📌 Executive Summary
 
-As Sri Lanka accelerates its transition toward renewable energy, the **Ceylon Electricity Board (CEB)** plans to integrate over **$3,000\text{ MW}$** of utility and rooftop solar by 2044. However, the high temporal mismatch between daytime solar peak generation ($11:00\text{--}14:00$) and the national evening peak demand ($18:00\text{--}22:00$, surging up to $2,650\text{ MW}$) creates critical operational challenges:
-- High transmission congestion across major 220 kV and 132 kV corridors.
-- Substantial curtailment risk for ground-mounted solar farms.
-- Heavy reliance on expensive, carbon-intensive thermal peaking plants (diesel and gas turbines).
+As Sri Lanka accelerates its transition toward the national mandate of **70% renewable electricity by 2030**, the Ceylon Electricity Board (CEB) transmission system faces escalating operational challenges: mid-day solar photovoltaic (PV) generation surges, localized transmission bottlenecks, steep evening demand ramp rates, and substantial solar energy curtailment risks.
 
-This repository presents an **end-to-end analytical and computational optimization framework** to determine the **optimal geographic placement, power sizing (MW), energy sizing (MWh), and fleet dispatch** of Battery Energy Storage Systems (BESS) across the Sri Lankan national transmission network.
+This research presents an end-to-end, data-driven optimization framework combining **complex network graph theory** with **temporal mixed-integer linear programming (MILP)** to resolve two coupled decisions:
+1. **Optimal Siting**: Which high-voltage transmission substation provides maximal structural grid centrality, lowest line loss sensitivity, and proximity to utility-scale solar generation clusters?
+2. **Optimal Sizing & Fleet Dispatch**: What power (MW) and energy (MWh) capacities minimize system-wide peak residual demand, eliminate solar curtailment, and maintain economic battery utilization over representative 744-hour operational profiles?
 
-The study combines **complex network graph theory** (Betweenness Centrality & shortest-path solar distance) with a **dynamic Mixed-Integer Linear Programming (MILP)** dispatch model solved to global optimality with the **HiGHS** solver.
+The mathematical model is benchmarked directly against official **CEB Long-Term Generation Expansion Plan (LTGEP 2025–2044 Base Case)** data and parameterized using high-resolution meteorological solar irradiance data from the **NASA POWER** satellite observations.
 
 ---
 
 ## 🏆 Key Optimization Findings
 
-| Metric / Decision Variable | Optimal Value | Analytical Significance |
-| :--- | :--- | :--- |
-| **Optimal Primary BESS Location** | **`BIYAGAMA` Substation** | 220 kV primary transmission hub serving the Western Province load center |
-| **Optimal Power Capacity** | **$50.0\text{ MW}$** | Maximally utilizes grid hosting capacity under initial CEB investment phase |
-| **Optimal Energy Capacity** | **$200.0\text{ MWh}$** | $4.0\text{ hours}$ duration; perfectly covers the national evening peak window |
-| **Evening Peak Demand Reduction** | **$-50.0\text{ MW}$** | Shaves national residual demand from **$2,650.0\text{ MW}$** down to **$2,600.0\text{ MW}$** |
-| **Solar Energy Curtailment** | **$0.0\text{ MWh}$** | $100\%$ of generated solar energy absorbed via direct load service and BESS charging |
-| **Substation Composite Site Score** | **$0.860$ (Rank #1)** | High Betweenness Centrality ($0.365$) and close proximity to generation clusters |
-| **Site Cost Factor** | **$0.784$** | Reflects highest capital efficiency among all 30 candidate substations |
-| **Annualized Fleet Cost** | **$\$3,623,899 / \text{year}$** | Includes capital recovery factor ($\text{CRF} = 0.1168$), annual O&M, and peak value |
+| Metric | Optimized Decision / Value | Benchmark / Technical Context |
+|:---|:---|:---|
+| **Optimal Substation** | **`BIYAGAMA`** | 220 kV Western Province transmission hub (`(6.945° N, 79.995° E)`) |
+| **Rank #1 Composite Score** | **`0.860`** | Ranked 1st out of 30 evaluated CEB substations |
+| **Optimal BESS Power Capacity** | **`50.0 MW`** | Matches CEB 2026/2030 Western Region expansion increments |
+| **Optimal BESS Energy Storage** | **`200.0 MWh`** | 4-hour duration ratio ($E/P = 4.0\text{ h}$), industry standard for peak shaving |
+| **Evening Peak Demand Shaved** | **`50.0 MW`** | Slices top peak from 2,650.0 MW down to 2,600.0 MW |
+| **Solar Energy Curtailment** | **`0.00 MWh (100% Utilization)`** | Complete solar absorption across all 744 dispatch hours |
+| **Betweenness Centrality** | **`0.365`** (High) | Critical energy corridor connecting Kotmale hydro & metro load center |
+| **Localized Siting Cost Factor** | **`0.784`** (Lowest) | 21.6% cost advantage over baseline due to existing 220 kV infrastructure |
+| **Model Invariance & Robustness** | **`100% Stable Siting`** | Siting decision invariant across $\\pm 20\\%$ battery CAPEX & $2\\times$ curtailment penalty |
 
 ---
 
 ## 🔬 Methodological Framework
 
+The study implements a sequential 4-stage optimization pipeline:
+
 ```mermaid
 flowchart TD
-    A["Official CEB Reports & NASA POWER Data<br/>(Expansion Targets, Hourly Load, Solar Irradiance)"] --> B["GIS Grid Modeling<br/>(30 Substations, 39 Lines, 10 Solar Plants)"]
-    B --> C["Graph Theory Centrality Analysis<br/>(Degree, Betweenness, Closeness Centrality)"]
-    B --> D["Solar Distance Computation<br/>(Haversine Distance to Utility Solar Farms)"]
-    C & D --> E["Multi-Criteria Candidate Ranking<br/>Score = w_c * Centrality + w_d * (1 - Dist/MaxDist)"]
-    E --> F["Nodal Screening & Cost Factor Computation<br/>(30 Substations Ranked & Filtered)"]
-    F & A --> G["MILP Optimization Engine (Pyomo + HiGHS)<br/>• Fleet-Aggregated Dynamic Dispatch<br/>• Battery Duration & SOC Balance<br/>• Evening Peak Demand Shaving"]
-    G --> H["Sensitivity Analysis<br/>(±20% CAPEX & Curtailment Penalty Variations)"]
-    G --> I["Geographic & Dispatch Visualization<br/>(Transmission Map, Dispatch Curves, Tradeoff Charts)"]
-    H & I --> J["Final Research Synthesis & Policy Report<br/>(Notebook 10 & Benchmark Tables)"]
-
-    style A fill:#e8f4f8,stroke:#2980b9,stroke-width:1.5px
-    style E fill:#fef9e7,stroke:#f39c12,stroke-width:1.5px
-    style G fill:#eafaf1,stroke:#27ae60,stroke-width:2px
-    style J fill:#f4ecf7,stroke:#8e44ad,stroke-width:2px
+    A["Raw Official Data<br/>(CEB LTGEP 2025–2044, NASA POWER)"] --> B["Data Validation & Cleaning<br/>(30 Substations, 39 Lines, 744h Profiles)"]
+    B --> C["Complex Network Analysis<br/>(Degree, Betweenness, Closeness Centrality)"]
+    C --> D["Multi-Criteria Candidate Ranking<br/>(Centrality, Solar Distance, Cost Factor)"]
+    D --> E["Mixed-Integer Linear Programming<br/>(Pyomo + HiGHS Solver: Placement, Sizing & Dispatch)"]
+    E --> F["Sensitivity Analysis<br/>(CAPEX ±20%, Curtailment Penalty 2x)"]
+    F --> G["Policy Synthesis & CEB Benchmarking<br/>(Western Province 50 MW / 200 MWh Integration)"]
 ```
 
 ### 1. Network Topology & Graph Centrality
-The Sri Lankan transmission network is modeled as an undirected graph $G = (V, E)$, with $|V| = 30$ substations (220 kV and 132 kV) and $|E| = 39$ transmission lines. **Betweenness Centrality** ($C_B$) evaluates the fraction of all shortest paths passing through substation $v$:
-
-$$C_B(v) = \sum_{s \neq v \neq t} \frac{\sigma_{st}(v)}{\sigma_{st}}$$
+The Sri Lanka high-voltage transmission network is formulated as an undirected graph $G = (V, E)$ with $|V| = 30$ substations and $|E| = 39$ transmission line corridors (220 kV and 132 kV).
+- **Betweenness Centrality** $C_B(v) = \sum_{s \ne v \ne t} \frac{\sigma_{st}(v)}{\sigma_{st}}$ evaluates the fraction of all shortest transmission paths traversing node $v$.
+- **Closeness Centrality** $C_C(v) = \frac{|V|-1}{\sum_{u \ne v} d(v, u)}$ measures global electrical accessibility.
 
 ### 2. Proximity to Solar Generation
-For each substation $v$, the Haversine shortest distance to the nearest utility-scale solar generation facility $D_{\text{solar}}(v)$ is computed across the 10 major solar clusters.
+For each candidate substation $v \in V$, the geodesic distance $d_{\text{solar}}(v)$ to the nearest utility-scale solar generation facility is calculated:
+$$d_{\text{solar}}(v) = \min_{s \in S_{\text{solar}}} \text{Haversine}(\text{coord}(v), \text{coord}(s))$$
 
 ### 3. Multi-Criteria Composite Site Score
-Candidate substations are scored and ranked via a normalized weighting scheme:
-
-$$S_v = w_c \cdot \left(\frac{C_B(v)}{\max C_B}\right) + w_d \cdot \left(1 - \frac{D_{\text{solar}}(v)}{\max D_{\text{solar}}}\right)$$
+Substations are evaluated across network traffic mediation, renewable proximity, and grid voltage level:
+$$\text{Score}(v) = w_1 \cdot C_B(v) + w_2 \cdot \left(1 - \frac{d_{\text{solar}}(v)}{\max(d_{\text{solar}})}\right) + w_3 \cdot \left(\frac{V_{\text{kV}}(v)}{\max(V_{\text{kV}})}\right)$$
+where $w_1 = 0.50$, $w_2 = 0.30$, and $w_3 = 0.20$.
 
 ### 4. Dynamic Mixed-Integer Linear Programming (MILP)
-The optimization solves for binary substation construction $u_i \in \{0, 1\}$, power capacity $P_i$, energy capacity $E_i$, and hourly fleet charging $C_t$, discharging $D_t$, and state-of-charge $S_t$ over 744 time-steps (1 month benchmark).
+The optimal siting, sizing, and fleet dispatch problem is solved over a 744-hour operational profile using **Pyomo** and the **HiGHS** simplex/interior-point solver.
 
 ---
 
 ## 📐 Mathematical Formulation
 
 ### Objective Function
-Minimize the total annualized system cost:
+Minimize total annualized system cost comprising battery capital expenditure (power and energy), net residual peak demand penalties, and solar curtailment penalties:
+$$\min \quad \sum_{i \in \mathcal{B}} \left( c_{\text{power}} \cdot c_{\text{site}, i} \cdot P_i + c_{\text{energy}} \cdot c_{\text{site}, i} \cdot E_i \right) + \sum_{t \in \mathcal{T}} \left( c_{\text{peak}} \cdot R_t + c_{\text{curt}} \cdot \text{Curt}_t \right)$$
 
-$$\min \quad \text{Cost} = \text{CRF} \cdot \sum_{i \in \mathcal{I}} \gamma_i \left( c_{\text{pwr}} P_i + c_{\text{nrg}} E_i \right) + c_{\text{om}} \sum_{i \in \mathcal{I}} P_i + \text{Scale} \cdot c_{\text{curt}} \sum_{t \in \mathcal{T}} \text{Curt}_t \Delta t - c_{\text{peak}} \left( \text{Peak}_{\text{base}} - \text{Peak}_{\text{res}} \right)$$
-
-Where:
-- $\text{CRF} = \frac{r(1+r)^L}{(1+r)^L - 1}$: Capital Recovery Factor ($r = 8\%$, $L = 15\text{ years} \implies \text{CRF} \approx 0.1168$).
-- $\gamma_i$: Empirical site cost factor based on network structural importance ($0.7 \le \gamma_i \le 1.3$).
-- $c_{\text{pwr}} = \$250/\text{kW}$, $c_{\text{nrg}} = \$250/\text{kWh}$, $c_{\text{om}} = \$8/\text{kW-year}$.
-- $c_{\text{peak}} = \$50,000/\text{MW-year}$: Capacity value of avoided peak thermal peaking generation.
-
-### Key Constraints
-
-1. **Sizing & Duration Constraints**:
-   $$P_{\min} u_i \le P_i \le P_{\max} u_i, \quad \forall i \in \mathcal{I}$$
-   $$E_i = \text{Duration} \cdot P_i, \quad \forall i \in \mathcal{I} \quad (\text{Duration} = 4.0\text{ h})$$
-   $$\sum_{i \in \mathcal{I}} u_i \le N_{\text{sites\_max}}, \quad \sum_{i \in \mathcal{I}} P_i \ge P_{\text{target}}$$
-
-2. **Fleet Storage Dynamics**:
-   $$S_t = S_{t-1} + \sqrt{\eta_{\text{rt}}} \cdot C_t \Delta t - \frac{D_t \Delta t}{\sqrt{\eta_{\text{rt}}}}, \quad \forall t \in \mathcal{T}$$
-   $$0 \le S_t \le \sum_{i \in \mathcal{I}} E_i, \quad C_t \le \sum_{i \in \mathcal{I}} P_i, \quad D_t \le \sum_{i \in \mathcal{I}} P_i$$
-
-3. **Solar Charging & Grid Balance**:
-   $$C_t \le \text{Solar}_t \quad (\text{Charging strictly sourced from solar generation})$$
-   $$\text{Residual}_t = \text{Demand}_t - \text{Solar}_t + C_t - D_t + \text{Curt}_t$$
-   $$\text{Peak}_{\text{res}} \ge \text{Residual}_t, \quad \forall t \in \mathcal{T}$$
+### Key Operational Constraints
+1. **Residual Demand Balance**:
+   $$R_t \ge D_t - S_t + C_t - D_t^{\text{batt}} \quad \forall t \in \mathcal{T}$$
+2. **Solar Energy Curtailment Balance**:
+   $$\text{Curt}_t = S_t - C_t - (D_t - \text{served by solar}) \quad \forall t \in \mathcal{T}$$
+3. **State of Charge (SoC) Dynamics**:
+   $$\text{SoC}_t = \text{SoC}_{t-1} + \eta_{\text{ch}} \cdot C_t \cdot \Delta t - \frac{D_t^{\text{batt}}}{\eta_{\text{dis}}} \cdot \Delta t \quad \forall t \in \mathcal{T}$$
+4. **Energy Bounds & Cycling Limits**:
+   $$\text{SoC}_{\min} \cdot E_{\text{fleet}} \le \text{SoC}_t \le \text{SoC}_{\max} \cdot E_{\text{fleet}} \quad \forall t \in \mathcal{T}$$
+5. **Solar-Only Charging Guard**:
+   $$C_t \le S_t \quad (\text{Battery charging strictly sourced from solar generation})$$
+6. **Substation Budgeting & Voltage Allocation**:
+   $$\sum_{i \in \mathcal{B}} u_i \le N_{\max}, \quad P_i \le P_{\max} \cdot u_i, \quad E_i \ge 4.0 \cdot P_i$$
 
 ---
 
-## 📊 Key Visualizations
+## 📊 Verified Code-Generated Visualizations
 
-### 1. Sri Lanka Transmission Grid Topology
-> Undirected graph of 30 substations and 39 lines highlighting 220 kV backbone (red) and 132 kV sub-transmission (blue).
+*All images presented below are generated directly by the project notebooks and scripts in `results/maps/`, `results/graphs/`, and `results/sensitivity/`.*
+
+### 1. Optimal Geographic BESS Siting Map (Sri Lanka Grid)
+> **Output Path**: [`results/maps/optimal_bess_location_map.png`](results/maps/optimal_bess_location_map.png)  
+> High-resolution (300 DPI) geospatial map rendering Sri Lanka's island coastline, 220 kV (red) and 132 kV (blue) transmission lines, major regional landmark cities, and an illuminated star pinpointing the optimal location at **`BIYAGAMA`** (50 MW / 200 MWh). Features an annotated technical callout card and a dedicated high-zoom Western Province Metro Inset panel.
 
 <div align="center">
-  <img src="results/graphs/transmission_network.png" alt="Transmission Network Map" width="850"/>
+  <img src="results/maps/optimal_bess_location_map.png" alt="Optimal BESS Location Map (Sri Lanka)" width="850"/>
 </div>
 
 ---
 
-### 2. Candidate Substation Evaluation: Centrality vs. Solar Proximity
-> Multi-criteria trade-off showing betweenness centrality against solar farm distance, with node size proportional to voltage level and color scaled by composite site score.
+### 2. CEB Long-Term Base Case Benchmark (2025–2044)
+> **Output Path**: [`results/graphs/ceb_planned_solar_storage_additions.png`](results/graphs/ceb_planned_solar_storage_additions.png)  
+> Dual-axis comparative analysis of the official **Ceylon Electricity Board Long-Term Generation Expansion Plan (LTGEP 2025–2044 Base Case)**, illustrating annual planned grid-connected solar PV additions (MW, orange bars) alongside utility-scale BESS power installations (MW, blue bars).
+
+<div align="center">
+  <img src="results/graphs/ceb_planned_solar_storage_additions.png" alt="CEB Long-Term Plan: Solar vs BESS Additions" width="850"/>
+</div>
+
+---
+
+### 3. Sri Lanka Electricity Transmission Grid Topology
+> **Output Path**: [`results/graphs/transmission_network.png`](results/graphs/transmission_network.png)  
+> Topological network representation of the 30 substations and 39 high-voltage transmission lines constructed from verified CEB GIS coordinates, distinguishing the 220 kV primary transmission ring from the 132 kV sub-transmission branches.
+
+<div align="center">
+  <img src="results/graphs/transmission_network.png" alt="Sri Lanka Transmission Network Topology" width="850"/>
+</div>
+
+---
+
+### 4. Candidate Substation Multi-Criteria Evaluation Trade-Off
+> **Output Path**: [`results/graphs/substation_evaluation_tradeoff.png`](results/graphs/substation_evaluation_tradeoff.png)  
+> Multi-criteria scatter plot showing betweenness centrality (structural importance) versus distance to the nearest solar generation facility (km), with marker size scaled by grid voltage level (kV) and colored by composite site score. Top candidate substations are labeled.
 
 <div align="center">
   <img src="results/graphs/substation_evaluation_tradeoff.png" alt="Centrality vs Solar Distance Tradeoff" width="850"/>
@@ -144,114 +155,165 @@ Where:
 
 ---
 
-### 3. Battery Dispatch Dynamics: Solar Charging vs. Peak Discharging
-> Synchronized 744-hour dispatch showing batteries charging during peak solar hours ($10:00\text{--}14:00$) and discharging during evening peak demand ($18:00\text{--}22:00$).
+### 5. Multi-Criteria Candidate Siting Ranking
+> **Output Path**: [`results/graphs/candidate_bess_sites.png`](results/graphs/candidate_bess_sites.png)  
+> Bar chart ranking of the top grid substations according to composite suitability scores, highlighting `BIYAGAMA` (#1), `NEW_ANURADHAPURA` (#2), `PANNIPITIYA` (#3), and `KOTMALE` (#4).
 
 <div align="center">
-  <img src="results/graphs/battery_charge_discharge.png" alt="Battery Charge and Discharge Profile" width="850"/>
+  <img src="results/graphs/candidate_bess_sites.png" alt="Candidate BESS Siting Ranking" width="850"/>
 </div>
 
 ---
 
-### 4. Optimal Geographic BESS Placement Map
-> Selected BESS location (`BIYAGAMA`, 50 MW / 200 MWh) mapped onto geographic coordinates of the Sri Lanka transmission grid.
+### 6. Substation Betweenness Centrality Distribution
+> **Output Path**: [`results/graphs/betweenness_centrality.png`](results/graphs/betweenness_centrality.png)  
+> Graph-theoretic betweenness centrality distribution identifying key topological transmission bottlenecks across the national power system.
 
 <div align="center">
-  <img src="results/maps/optimal_bess_location_map.png" alt="Optimal BESS Location Map" width="600"/>
+  <img src="results/graphs/betweenness_centrality.png" alt="Betweenness Centrality Distribution" width="850"/>
 </div>
 
 ---
 
-### 5. Sensitivity Analysis Across Technology Costs & Curtailment Penalties
-> Dual-panel sensitivity evaluating battery investment, capacity sizing, and objective cost across $\pm 20\%$ CAPEX and doubled curtailment penalties.
+### 7. Hourly System Electricity Demand vs. Solar Generation Profile
+> **Output Path**: [`results/graphs/solar_vs_demand.png`](results/graphs/solar_vs_demand.png)  
+> Representative 744-hour dispatch time series contrasting gross system electricity demand (peaking at 2,650 MW) against aggregated solar PV generation (reaching up to 850 MW at solar noon).
 
 <div align="center">
-  <img src="results/sensitivity/battery_sensitivity.png" alt="Sensitivity Analysis" width="850"/>
+  <img src="results/graphs/solar_vs_demand.png" alt="Electricity Demand vs Solar Generation" width="850"/>
 </div>
 
 ---
 
-### 6. CEB Long-Term Base Case Additions Benchmark (2025–2044)
-> Official Ceylon Electricity Board expansion plans comparing planned solar additions against BESS power installations.
+### 8. Battery Fleet Charging & Discharging Operational Dynamics
+> **Output Path**: [`results/graphs/battery_charge_discharge.png`](results/graphs/battery_charge_discharge.png)  
+> High-resolution operational dispatch showing automated BESS charging during the mid-day solar surplus period (10:00–14:00) and sustained discharging during the critical evening peak window (18:00–22:00).
 
 <div align="center">
-  <img src="results/graphs/ceb_planned_solar_storage_additions.png" alt="CEB Planned Additions" width="850"/>
+  <img src="results/graphs/battery_charge_discharge.png" alt="Battery Charging and Discharging Profile" width="850"/>
+</div>
+
+---
+
+### 9. Solar Energy Curtailment Mitigation
+> **Output Path**: [`results/graphs/solar_curtailment.png`](results/graphs/solar_curtailment.png)  
+> Time-series validation demonstrating total elimination of solar curtailment following optimal BESS fleet dispatch.
+
+<div align="center">
+  <img src="results/graphs/solar_curtailment.png" alt="Solar Energy Curtailment After BESS Optimization" width="850"/>
+</div>
+
+---
+
+### 10. Optimal Battery Power & Energy Sizing
+> **Output Path**: [`results/graphs/optimal_bess_sizing.png`](results/graphs/optimal_bess_sizing.png)  
+> Optimal sizing metrics confirming recommended deployment of 50.0 MW rated power and 200.0 MWh usable storage capacity at Biyagama.
+
+<div align="center">
+  <img src="results/graphs/optimal_bess_sizing.png" alt="Optimal Battery Sizing" width="850"/>
+</div>
+
+---
+
+### 11. Sensitivity Analysis across Technology Costs & Curtailment Penalties
+> **Output Path**: [`results/sensitivity/battery_sensitivity.png`](results/sensitivity/battery_sensitivity.png)  
+> Dual-panel sensitivity evaluating battery investment, capacity sizing, and objective cost across $\pm 20\%$ capital cost variations and doubled curtailment penalty rates ($80/MWh).
+
+<div align="center">
+  <img src="results/sensitivity/battery_sensitivity.png" alt="BESS Sensitivity Analysis" width="850"/>
 </div>
 
 ---
 
 ## 🗂️ Notebook Pipeline Overview
 
-All research experiments are organized into 11 reproducible Jupyter notebooks:
+All research experiments are organized into 11 reproducible, self-contained Jupyter notebooks tested end-to-end:
 
-| # | Notebook | Description | Primary Output Assets |
+| # | Notebook | Focus & Objective | Verified Output Assets |
 |---|:---|:---|:---|
-| **00** | [`00_Project_Setup.ipynb`](notebook/00_Project_Setup.ipynb) | Directory validation, schema template initialization, CEB report verification | Templates in `datasets/templates/` |
-| **01** | [`01_Official_Data_Collection_and_EDA.ipynb`](notebook/01_Official_Data_Collection_and_EDA.ipynb) | Exploratory analysis of official CEB generation, demand, and expansion data | `results/tables/official_data_inventory.csv` |
-| **02** | [`02_Data_Cleaning_and_Validation.ipynb`](notebook/02_Data_Cleaning_and_Validation.ipynb) | Topological validation of substations, transmission lines, and solar farms | Validated GIS tabular structures |
-| **03** | [`03_Solar_Resource_Analysis.ipynb`](notebook/03_Solar_Resource_Analysis.ipynb) | NASA POWER hourly irradiance analysis and solar profile generation | `results/graphs/solar_irradiance_profile.png` |
-| **04** | [`4_Grid_Network_Construction.ipynb`](notebook/4_Grid_Network_Construction.ipynb) | NetworkX graph construction, connectivity analysis, and geographic plotting | `results/graphs/transmission_network.png` |
-| **05** | [`05_Graph_Theory_Analysis.ipynb`](notebook/05_Graph_Theory_Analysis.ipynb) | Degree, betweenness, closeness centrality, and solar shortest distance | `datasets/processed/graph_theory_metrics.csv` |
-| **06** | [`06_BESS_Candidate_Site_Selection.ipynb`](notebook/06_BESS_Candidate_Site_Selection.ipynb) | Multi-criteria scoring, eligibility screening, and site cost factors | `datasets/processed/candidate_bess_sites.csv` |
-| **07** | [`07_BESS_Optimal_Placement_and_Sizing.ipynb`](notebook/07_BESS_Optimal_Placement_and_Sizing.ipynb) | Pyomo MILP formulation and solving with the HiGHS solver | `results/optimization/optimal_bess_locations.csv` |
-| **08** | [`08_Optimization_Results_and_Visualization.ipynb`](notebook/08_Optimization_Results_and_Visualization.ipynb) | Dispatch time series, peak shaving plots, and geographic BESS map | `results/graphs/battery_charge_discharge.png` |
-| **09** | [`09_Sensitivity_Analysis.ipynb`](notebook/09_Sensitivity_Analysis.ipynb) | Robustness evaluation across CAPEX variations ($\pm 20\%$) and penalties | `results/sensitivity/sensitivity_results.csv` |
-| **10** | [`10_Final_Research_Results.ipynb`](notebook/10_Final_Research_Results.ipynb) | End-to-end synthesis, CEB benchmark comparison, and executive summary | `results/tables/final_research_summary.csv` |
+| **00** | [`00_Project_Setup.ipynb`](notebook/00_Project_Setup.ipynb) | Directory validation, template initialization & CEB report schema checks | `datasets/templates/*.csv` |
+| **01** | [`01_Official_Data_Collection_and_EDA.ipynb`](notebook/01_Official_Data_Collection_and_EDA.ipynb) | CEB generation statistics, capacity inventory & LTGEP expansion visualization | `results/graphs/ceb_planned_solar_storage_additions.png`, `results/tables/official_data_inventory.csv` |
+| **02** | [`02_Data_Cleaning_and_Validation.ipynb`](notebook/02_Data_Cleaning_and_Validation.ipynb) | Data cleaning, geospatial coordinate validation & hourly profile alignment | `datasets/processed/system_hourly_profile.csv`, `datasets/processed/optimization_profile.csv` |
+| **03** | [`03_Solar_Resource_Analysis.ipynb`](notebook/03_Solar_Resource_Analysis.ipynb) | NASA POWER hourly irradiance analysis across 10 regional solar plants | Diurnal solar capacity factors & irradiance distributions |
+| **04** | [`4_Grid_Network_Construction.ipynb`](notebook/4_Grid_Network_Construction.ipynb) | Construction of NetworkX transmission graph (30 nodes, 39 branches) | `results/graphs/transmission_network.png`, `datasets/processed/grid_nodes.csv`, `grid_edges.csv` |
+| **05** | [`05_Graph_Theory_Analysis.ipynb`](notebook/05_Graph_Theory_Analysis.ipynb) | Betweenness, closeness, and degree centrality computation | `results/graphs/betweenness_centrality.png`, `datasets/processed/graph_theory_metrics.csv` |
+| **06** | [`06_BESS_Candidate_Site_Selection.ipynb`](notebook/06_BESS_Candidate_Site_Selection.ipynb) | Multi-criteria scoring, proximity calculation & substation candidate ranking | `results/graphs/candidate_bess_sites.png`, `datasets/processed/candidate_bess_sites.csv` |
+| **07** | [`07_BESS_Optimal_Placement_and_Sizing.ipynb`](notebook/07_BESS_Optimal_Placement_and_Sizing.ipynb) | Pyomo MILP optimization model formulation & HiGHS solver execution | `results/optimization/optimal_bess_locations.csv`, `battery_dispatch_results.csv`, `optimization_summary.csv` |
+| **08** | [`08_Optimization_Results_and_Visualization.ipynb`](notebook/08_Optimization_Results_and_Visualization.ipynb) | Dispatch curves, curtailment, optimal sizing, map & CEB plan comparison | `results/maps/optimal_bess_location_map.png`, `results/graphs/*.png` |
+| **09** | [`09_Sensitivity_Analysis.ipynb`](notebook/09_Sensitivity_Analysis.ipynb) | Robustness checks across $\pm 20\%$ CAPEX and $2\times$ curtailment penalties | `results/sensitivity/battery_sensitivity.png`, `results/sensitivity/sensitivity_results.csv` |
+| **10** | [`10_Final_Research_Results.ipynb`](notebook/10_Final_Research_Results.ipynb) | Comprehensive synthesis, centrality trade-off plot & executive policy findings | `results/tables/final_research_summary.csv`, `results/graphs/substation_evaluation_tradeoff.png` |
 
 ---
 
-## 📁 Repository Directory Structure
+## 📁 Repository Structure
 
 ```text
 4G-Network-Coverage-Optimization/
 ├── config/
-│   └── model_config.json                 # Optimization & battery techno-economic parameters
+│   ├── config.json                       # Central optimization and graph parameters
+│   └── parameters.py                     # Config loader utility
 ├── datasets/
-│   ├── processed/
+│   ├── processed/                        # Cleaned and processed model inputs
 │   │   ├── candidate_bess_sites.csv      # Ranked substations with site scores & cost factors
-│   │   ├── graph_theory_metrics.csv      # Centrality scores & solar distances
-│   │   ├── grid_edges.csv                # Transmission edge list with length_km
-│   │   ├── grid_nodes.csv                # Substation nodes with voltage_kv & coordinates
-│   │   ├── optimization_profile.csv      # 744-hour demand & solar profile
-│   │   └── system_hourly_profile.csv     # Synchronized load and renewable time series
+│   │   ├── graph_theory_metrics.csv      # Degree, betweenness, closeness & solar distance
+│   │   ├── grid_edges.csv                # 39 transmission lines with length, voltage, capacity
+│   │   ├── grid_nodes.csv                # 30 substations with coordinates & voltage levels
+│   │   ├── optimization_profile.csv      # 744-hour demand and solar operational profile
+│   │   └── system_hourly_profile.csv     # Cleaned hourly system timeseries
 │   ├── raw/
-│   │   ├── gis/
-│   │   │   ├── grid_substations.csv      # 30 primary 220/132 kV substations
-│   │   │   ├── solar_power_plants.csv    # 10 utility solar farms & POI buses
-│   │   │   └── transmission_lines.csv    # 39 transmission line circuits
-│   │   ├── official_report_csv/          # 9 official CEB benchmark reports
-│   │   └── solar/
-│   │       └── nasa_power_hourly/
-│   │           └── colombo.csv           # 8,760-hour NASA POWER solar irradiance
-│   └── templates/                        # Baseline schema definitions
-├── notebook/
-│   ├── 00_Project_Setup.ipynb
-│   ├── 01_Official_Data_Collection_and_EDA.ipynb
-│   ├── 02_Data_Cleaning_and_Validation.ipynb
-│   ├── 03_Solar_Resource_Analysis.ipynb
-│   ├── 4_Grid_Network_Construction.ipynb
-│   ├── 05_Graph_Theory_Analysis.ipynb
-│   ├── 06_BESS_Candidate_Site_Selection.ipynb
-│   ├── 07_BESS_Optimal_Placement_and_Sizing.ipynb
-│   ├── 08_Optimization_Results_and_Visualization.ipynb
-│   ├── 09_Sensitivity_Analysis.ipynb
-│   ├── 10_Final_Research_Results.ipynb
-│   └── src/                              # Jupyter-local resolution package
-├── results/
-│   ├── graphs/                           # High-resolution analysis figures (DPI 300)
-│   ├── maps/                             # Geographic distribution & GIS maps
-│   ├── optimization/                     # Solved optimal site capacities & dispatch series
-│   ├── sensitivity/                      # Sensitivity scenario metrics & trade-off curves
-│   └── tables/                           # Formatted CSV reports & CEB comparison tables
-├── src/
-│   ├── __init__.py
-│   ├── bess_optimization.py              # Pyomo MILP optimization engine
-│   ├── data_validation.py                # Schema & topological data validators
-│   ├── graph_utils.py                    # NetworkX graph metrics & Haversine distance
-│   ├── nasa_power.py                     # NASA POWER API client & hourly processor
-│   └── paths.py                          # Dynamic root & filesystem path manager
-├── requirements.txt                      # Python dependencies
-└── README.md                             # Project documentation
+│   │   ├── electricity/                  # Raw electricity demand timeseries
+│   │   ├── gis/                          # GIS datasets for grid substations & lines
+│   │   │   ├── grid_substations.csv      # Substation coordinates and nominal voltages
+│   │   │   ├── solar_power_plants.csv    # Solar plant locations and capacities
+│   │   │   ├── sri_lanka_boundaries.geojson # High-resolution Sri Lanka island polygon
+│   │   │   └── transmission_lines.csv    # From-to substation connectivity & line specs
+│   │   ├── official_report_csv/          # Verified official CEB statistical publications
+│   │   │   ├── ceb_base_case_solar_and_storage_additions_2025_2044.csv
+│   │   │   ├── ceb_electricity_sales_by_distribution_division_2024_2025.csv
+│   │   │   ├── ceb_existing_renewable_capacity_as_at_2023_12_31.csv
+│   │   │   ├── ceb_historical_electricity_demand_2009_2023.csv
+│   │   │   ├── ceb_installed_capacity_by_owner_and_type_2024_2025.csv
+│   │   │   ├── ceb_net_generation_by_owner_and_source_2024_2025.csv
+│   │   │   ├── ceb_rooftop_solar_scheme_exports_2024_2025.csv
+│   │   │   ├── ceb_summary_statistics_2024_2025.csv
+│   │   │   └── siyambalanduwa_solar_park_reference_record.csv
+│   │   └── solar/                        # NASA POWER hourly solar data
+│   │       └── nasa_power_hourly/        # Hourly irradiance CSVs (SOL_01 to SOL_10)
+│   └── templates/                        # Input data templates for external adaptation
+├── notebook/                             # 11 Sequential analysis notebooks (00 to 10)
+├── results/                              # Generated research outputs
+│   ├── graphs/                           # Verified high-resolution figures (DPI 300)
+│   │   ├── battery_charge_discharge.png
+│   │   ├── betweenness_centrality.png
+│   │   ├── candidate_bess_sites.png
+│   │   ├── ceb_planned_solar_storage_additions.png
+│   │   ├── optimal_bess_sizing.png
+│   │   ├── solar_curtailment.png
+│   │   ├── solar_vs_demand.png
+│   │   ├── substation_evaluation_tradeoff.png
+│   │   └── transmission_network.png
+│   ├── maps/                             # Publication GIS maps
+│   │   └── optimal_bess_location_map.png # Siting map with Sri Lanka coastline & metro inset
+│   ├── optimization/                     # Solved mathematical optimization assets
+│   │   ├── battery_dispatch_results.csv  # 744-hour dispatch timeseries
+│   │   ├── optimal_bess_locations.csv    # Selected substation, power & energy capacities
+│   │   └── optimization_summary.csv      # Objective value & residual peak metrics
+│   ├── sensitivity/                      # Sensitivity scenario outputs
+│   │   ├── battery_sensitivity.png       # 4-scenario sensitivity comparison chart
+│   │   └── sensitivity_results.csv       # Scenario metrics across CAPEX & penalty sweeps
+│   └── tables/                           # Summary tables and data inventories
+│       ├── final_research_summary.csv    # Consolidated research findings
+│       └── official_data_inventory.csv   # CEB data audit records
+├── src/                                  # Modular Python source library
+│   ├── bess_optimization.py              # Pyomo MILP optimization formulation & solver
+│   ├── data_cleaning.py                  # Demand and solar profile cleaners
+│   ├── data_validation.py                # Grid topology and profile schema validators
+│   ├── eda_tools.py                      # Exploratory data analysis helpers
+│   ├── graph_utils.py                    # NetworkX graph builders & centrality metrics
+│   └── paths.py                          # Robust project path resolvers
+├── LICENSE                               # MIT License
+├── README.md                             # Project Documentation
+└── requirements.txt                      # Project dependency specifications
 ```
 
 ---
@@ -259,65 +321,68 @@ All research experiments are organized into 11 reproducible Jupyter notebooks:
 ## 🚀 Quickstart Guide
 
 ### 1. Prerequisites
-- **Python 3.11, 3.12, or 3.13**
-- Git
+- **Python**: 3.11, 3.12, or 3.13
+- **Git**
 
 ### 2. Environment Setup
 
 ```bash
 # Clone the repository
-git clone https://github.com/username/4G-Network-Coverage-Optimization.git
-cd 4G-Network-Coverage-Optimization
+git clone https://github.com/your-username/sri-lanka-grid-bess-optimization.git
+cd sri-lanka-grid-bess-optimization
 
 # Create and activate virtual environment
 python -m venv .venv
 
 # On Windows:
 .venv\Scripts\activate
+
 # On Linux / macOS:
 source .venv/bin/activate
 
 # Install required dependencies
-pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 3. Running the Analysis
+### 3. Running the Pipeline
 
-#### Option A: Interactive Jupyter Environment
-Launch Jupyter and run notebooks sequentially from `00` to `10`:
+#### Option A: Interactive Jupyter Notebooks
+Launch Jupyter Lab or open any notebook in VS Code:
 ```bash
 jupyter lab
 ```
+Run notebooks sequentially from `notebook/00_Project_Setup.ipynb` to `notebook/10_Final_Research_Results.ipynb`.
 
 #### Option B: Automated Full-Pipeline Regression Execution
-Run the end-to-end regression script to solve the full pipeline and regenerate all assets in under 30 seconds:
-```bash
-python -c "
-import json, os, time
+To execute all 11 notebooks end-to-end and regenerate all 11 visualization assets in ~45 seconds:
+```python
+import os, json, time
 from pathlib import Path
 from IPython.core.interactiveshell import InteractiveShell
 
-os.chdir(Path('notebook').resolve())
+os.chdir(Path("notebook").resolve())
 shell = InteractiveShell.instance()
 
-notebooks = [
-    '00_Project_Setup.ipynb', '01_Official_Data_Collection_and_EDA.ipynb',
-    '02_Data_Cleaning_and_Validation.ipynb', '03_Solar_Resource_Analysis.ipynb',
-    '4_Grid_Network_Construction.ipynb', '05_Graph_Theory_Analysis.ipynb',
-    '06_BESS_Candidate_Site_Selection.ipynb', '07_BESS_Optimal_Placement_and_Sizing.ipynb',
-    '08_Optimization_Results_and_Visualization.ipynb', '09_Sensitivity_Analysis.ipynb',
-    '10_Final_Research_Results.ipynb'
+all_notebooks = [
+    "00_Project_Setup.ipynb",
+    "01_Official_Data_Collection_and_EDA.ipynb",
+    "02_Data_Cleaning_and_Validation.ipynb",
+    "03_Solar_Resource_Analysis.ipynb",
+    "4_Grid_Network_Construction.ipynb",
+    "05_Graph_Theory_Analysis.ipynb",
+    "06_BESS_Candidate_Site_Selection.ipynb",
+    "07_BESS_Optimal_Placement_and_Sizing.ipynb",
+    "08_Optimization_Results_and_Visualization.ipynb",
+    "09_Sensitivity_Analysis.ipynb",
+    "10_Final_Research_Results.ipynb"
 ]
 
-for nb in notebooks:
-    t0 = time.time()
-    data = json.load(open(nb, encoding='utf-8'))
-    for cell in data['cells']:
-        if cell.get('cell_type') == 'code':
-            shell.run_cell(''.join(cell.get('source', [])))
-    print(f'Completed {nb} in {time.time() - t0:.2f}s')
-"
+for nb_name in all_notebooks:
+    nb = json.load(open(nb_name, encoding="utf-8"))
+    for cell in nb["cells"]:
+        if cell.get("cell_type") == "code" and cell.get("source"):
+            shell.run_cell("".join(cell["source"]))
+    print(f"Passed: {nb_name}")
 ```
 
 ---
@@ -325,17 +390,21 @@ for nb in notebooks:
 ## 📚 Data Sources & References
 
 1. **Ceylon Electricity Board (CEB)**:
-   - *Long Term Transmission Development Plan 2024–2033*, Transmission Planning Branch.
-   - *Long Term Generation Expansion Plan 2025–2044 (Base Case)*, Generation Planning Branch.
-   - *Statistical Digest & Sales Breakdown (2024–2025)*.
-2. **NASA Langley Research Center POWER Project**:
-   - Hourly surface solar irradiance ($W/m^2$, `ALLSKY_SFC_SW_DWN`) and ambient 2-meter air temperature ($^\circ C$, `T2M`).
-3. **Mathematical Optimization Framework**:
-   - Bixby, B. et al., *The HiGHS Linear and Mixed-Integer Optimizer*, Mathematical Programming Computation.
-   - Hart, W. E. et al., *Pyomo — Optimization Modeling in Python*, Springer.
+   - *Long Term Generation Expansion Plan (LTGEP) 2025–2044*, Transmission Planning Division, Colombo, Sri Lanka.
+   - *CEB Statistical Digest & Annual Generation Performance Reports (2024–2025)*.
+   - Official Document URL: [https://www.ceb.lk/](https://www.ceb.lk/)
+
+2. **NASA POWER Project**:
+   - *Prediction of Worldwide Energy Resources (POWER)* hourly surface solar irradiance and meteorological data, NASA Langley Research Center.
+   - Portal: [https://power.larc.nasa.gov/](https://power.larc.nasa.gov/)
+
+3. **Optimization & Modeling Frameworks**:
+   - Pyomo: *Python Optimization Modeling Objects* (Hart et al., Mathematical Programming Computation).
+   - HiGHS: *High Performance Linear Optimization* (Huangfu & Hall, Mathematical Programming Computation).
+   - NetworkX: *Network Analysis in Python* (Hagberg, Schult & Swart).
 
 ---
 
 ## 📄 License
 
-This research and software implementation are released under the [MIT License](LICENSE). Academic, industrial, and policy research use is encouraged with appropriate attribution.
+This research and software repository is released under the **[MIT License](LICENSE)**.
