@@ -86,53 +86,113 @@ Substations are scored based on topological centrality, solar generation proximi
 The optimization problem is formulated as a Mixed-Integer Linear Program (MILP) implemented in **Pyomo 6.10** and solved via **HiGHS v1.15**.
 
 ### 1. Objective Function
-Minimize total annualized system expenditure, combining capital investment annualized via the Capital Recovery Factor (CRF), fixed operations & maintenance (O&M), energy curtailment penalties, and peak reduction benefits:
 
-$$\min \quad \mathcal{Z} = \text{CRF} \cdot \text{CAPEX}_{\text{fleet}} + \text{OPEX}_{\text{O\&M}} + \text{Cost}_{\text{curtailment}} - \text{Benefit}_{\text{peak}}$$
+Minimize total annualized system expenditure, combining capital investment annualized via the Capital Recovery Factor (CRF), fixed operations & maintenance (OPEX), energy curtailment penalties, and peak reduction benefits:
+
+$$
+\min \quad \mathcal{Z} = \text{CRF} \cdot \text{CAPEX}_{\text{fleet}} + \text{OPEX}_{\text{OM}} + \text{Cost}_{\text{curtailment}} - \text{Benefit}_{\text{peak}}
+$$
 
 Where:
-$$\text{CAPEX}_{\text{fleet}} = \sum_{i \in \mathcal{I}} c_{\text{site}, i} \cdot \left( c_{\text{power}} \cdot 1000 \cdot P_i + c_{\text{energy}} \cdot 1000 \cdot E_i \right)$$
 
-$$\text{OPEX}_{\text{O\&M}} = \sum_{i \in \mathcal{I}} c_{\text{om}} \cdot 1000 \cdot P_i$$
+- **Fleet Capital Expenditure (CAPEX):**
 
-$$\text{Cost}_{\text{curtailment}} = \left( \frac{365}{D_{\text{rep}}} \right) \cdot c_{\text{curt}} \cdot \sum_{t \in \mathcal{T}} \text{Curt}_t \cdot \Delta t$$
+$$
+\text{CAPEX}_{\text{fleet}} = \sum_{i \in \mathcal{I}} c_{\text{site}, i} \cdot \left( c_{\text{power}} \cdot 1000 \cdot P_i + c_{\text{energy}} \cdot 1000 \cdot E_i \right)
+$$
 
-$$\text{Benefit}_{\text{peak}} = v_{\text{peak}} \cdot \left( \max_{t \in \mathcal{T}}(D_t - S_t) - \text{Peak}_{\text{residual}} \right)$$
+- **Annual Fixed Operations & Maintenance (OPEX):**
+
+$$
+\text{OPEX}_{\text{OM}} = \sum_{i \in \mathcal{I}} c_{\text{om}} \cdot 1000 \cdot P_i
+$$
+
+- **Solar Curtailment Economic Penalty:**
+
+$$
+\text{Cost}_{\text{curtailment}} = \left( \frac{365}{D_{\text{rep}}} \right) \cdot c_{\text{curt}} \cdot \sum_{t \in \mathcal{T}} \text{Curt}_t \cdot \Delta t
+$$
+
+- **Peak Demand Reduction Capacity Value:**
+
+$$
+\text{Benefit}_{\text{peak}} = v_{\text{peak}} \cdot \left( \max_{t \in \mathcal{T}}(D_t - S_t) - \text{Peak}_{\text{residual}} \right)
+$$
+
+---
 
 ### 2. Capital Recovery Factor (CRF)
-$$\text{CRF} = \frac{d \cdot (1 + d)^L}{(1 + d)^L - 1} = \frac{0.08 \cdot (1 + 0.08)^{15}}{(1 + 0.08)^{15} - 1} \approx 0.11683$$
-- Discount rate $d = 8.0\%$
-- Asset economic lifetime $L = 15\text{ years}$
+
+The annualized capital charge is computed using the standard capital recovery factor over project lifetime $L = 15\text{ years}$ at a discount rate $d = 8.0\%$:
+
+$$
+\text{CRF} = \frac{d \cdot (1 + d)^L}{(1 + d)^L - 1} = \frac{0.08 \cdot (1 + 0.08)^{15}}{(1 + 0.08)^{15} - 1} \approx 0.11683
+$$
+
+---
 
 ### 3. Key Technical & Operational Constraints
-- **Substation Siting Limit & Sizing Bounds**:
-  $$\sum_{i \in \mathcal{I}} u_i \le N_{\max} = 5, \quad P_{\min} \cdot u_i \le P_i \le P_{\max} \cdot u_i \quad (P_{\max} = 50\text{ MW}, P_{\min} = 5\text{ MW})$$
-  $$E_i = 4.0 \cdot P_i \quad (\text{Enforces mandatory 4-hour duration})$$
 
-- **Hourly State of Charge (SoC) Dynamics**:
-  $$\text{SoC}_t = \text{SoC}_{t-1} + \eta_{\text{ch}} \cdot C_t \cdot \Delta t - \frac{D_t^{\text{batt}}}{\eta_{\text{dis}}} \cdot \Delta t, \quad \forall t \in \mathcal{T}$$
-  $$\text{SoC}_t \le E_{\text{total}} = \sum_{i \in \mathcal{I}} E_i, \quad \eta_{\text{ch}} = \eta_{\text{dis}} = \sqrt{0.90} \approx 0.94868$$
+#### A. Substation Siting Limits & Sizing Bounds
+The model enforces binary substation selection $u_i \in \{0, 1\}$, a maximum concurrent fleet limit ($N_{\max} = 5$), power capacity bounds ($5\text{ MW} \le P_i \le 50\text{ MW}$), and a mandatory 4-hour storage duration:
 
-- **Solar-Only Charging Restriction**:
-  $$C_t \le S_t \quad \forall t \in \mathcal{T} \quad (\text{BESS charging strictly restricted to available solar generation})$$
+$$
+\sum_{i \in \mathcal{I}} u_i \le N_{\max} = 5
+$$
 
-- **Curtailment Definition & Residual Demand**:
-  $$\text{Curt}_t \ge S_t - C_t - D_t \quad \forall t \in \mathcal{T}$$
-  $$R_t = D_t - S_t + C_t - D_t^{\text{batt}} + \text{Curt}_t \quad \forall t \in \mathcal{T}$$
-  $$\text{Peak}_{\text{residual}} \ge R_t \quad \forall t \in \mathcal{T}$$
+$$
+P_{\min} \cdot u_i \le P_i \le P_{\max} \cdot u_i \quad \forall i \in \mathcal{I}
+$$
+
+$$
+E_i = 4.0 \cdot P_i \quad \forall i \in \mathcal{I}
+$$
+
+#### B. Hourly State of Charge (SoC) Dynamics
+Battery storage inventory transitions account for round-trip efficiency $\eta_{\text{rt}} = 0.90$ ($\eta_{\text{ch}} = \eta_{\text{dis}} = \sqrt{0.90} \approx 0.94868$), dynamic charging, discharging, and periodic boundary constraints:
+
+$$
+\text{SoC}_t = \text{SoC}_{t-1} + \eta_{\text{ch}} \cdot C_t \cdot \Delta t - \frac{D_t^{\text{batt}}}{\eta_{\text{dis}}} \cdot \Delta t \quad \forall t \in \mathcal{T}
+$$
+
+$$
+\text{SoC}_t \le E_{\text{total}} = \sum_{i \in \mathcal{I}} E_i \quad \forall t \in \mathcal{T}
+$$
+
+#### C. Solar-Only Charging Restriction
+Battery charging is strictly bounded by available solar photovoltaic production ($S_t$), ensuring zero charging from fossil generation:
+
+$$
+C_t \le S_t \quad \forall t \in \mathcal{T}
+$$
+
+#### D. Solar Curtailment Definition & Residual Demand Tracking
+Solar generation exceeding local demand and battery absorption is tracked as curtailment ($\text{Curt}_t$), while residual demand ($R_t$) defines the net system peak load:
+
+$$
+\text{Curt}_t \ge S_t - C_t - D_t \quad \forall t \in \mathcal{T}
+$$
+
+$$
+R_t = D_t - S_t + C_t - D_t^{\text{batt}} + \text{Curt}_t \quad \forall t \in \mathcal{T}
+$$
+
+$$
+\text{Peak}_{\text{residual}} \ge R_t \quad \forall t \in \mathcal{T}
+$$
 
 ---
 
 ## 📈 Sensitivity Analysis Results
 
-To assess investment robustness, four sensitivity scenarios were evaluated across capital expenditure multipliers ($\\pm 20\\%$) and curtailment penalty rates ($2\\times$):
+To assess investment robustness, four sensitivity scenarios were evaluated across capital expenditure multipliers ($\pm 20\%$) and curtailment penalty rates ($2\times$):
 
-| Sensitivity Scenario | CAPEX Multiplier | Curtailment Penalty ($/MWh) | Optimal Siting Decision | Rated Power (MW) | Energy Storage (MWh) | Residual Peak (MW) | Solar Curtailment (MWh) | Annualized Objective Cost |
+| Sensitivity Scenario | CAPEX Multiplier | Curtailment Penalty (\$/MWh) | Optimal Siting Decision | Rated Power (MW) | Energy Storage (MWh) | Residual Peak (MW) | Solar Curtailment (MWh) | Annualized Objective Cost |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Low Battery Cost (-20%)** | `0.8` | $40.00 | **BIYAGAMA** | 50.0 MW | 200.0 MWh | 2,600.0 MW | 0.00 MWh | **$2,479,119.47** |
-| **Base Case** | `1.0` | $40.00 | **BIYAGAMA** | 50.0 MW | 200.0 MWh | 2,600.0 MW | 0.00 MWh | **$3,623,899.34** |
-| **High Battery Cost (+20%)** | `1.2` | $40.00 | **BIYAGAMA** | 50.0 MW | 200.0 MWh | 2,600.0 MW | 0.00 MWh | **$4,768,679.21** |
-| **High Curtailment Penalty (2x)**| `1.0` | $80.00 | **BIYAGAMA** | 50.0 MW | 200.0 MWh | 2,600.0 MW | 0.00 MWh | **$3,623,899.34** |
+| **Low Battery Cost (-20%)** | `0.8` | \$40.00 | **BIYAGAMA** | 50.0 MW | 200.0 MWh | 2,600.0 MW | 0.00 MWh | **\$2,479,119.47** |
+| **Base Case** | `1.0` | \$40.00 | **BIYAGAMA** | 50.0 MW | 200.0 MWh | 2,600.0 MW | 0.00 MWh | **\$3,623,899.34** |
+| **High Battery Cost (+20%)** | `1.2` | \$40.00 | **BIYAGAMA** | 50.0 MW | 200.0 MWh | 2,600.0 MW | 0.00 MWh | **\$4,768,679.21** |
+| **High Curtailment Penalty (2x)**| `1.0` | \$80.00 | **BIYAGAMA** | 50.0 MW | 200.0 MWh | 2,600.0 MW | 0.00 MWh | **\$3,623,899.34** |
 
 > **Key Insight**: The optimal location (`BIYAGAMA`) and sizing (`50 MW / 200 MWh`) remain **100% invariant** across all sensitivity scenarios, proving that the decision is structurally anchored in transmission topology and regional demand concentration rather than minor cost fluctuations.
 
