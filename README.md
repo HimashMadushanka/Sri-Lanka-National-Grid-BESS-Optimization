@@ -247,70 +247,49 @@ The research pipeline comprises 11 reproducible, self-contained Jupyter notebook
 ```text
 4G-Network-Coverage-Optimization/
 ├── config/
-│   ├── model_config.json                 # Model hyperparameters, battery costs & graph weights
-│   └── parameters.py                     # Config parser utility
+│   ├── __init__.py                                 # Configuration module initializer
+│   ├── model_config.json                           # Battery parameters, solver parameters, and weights
+│   └── parameters.py                               # Typed parameter dataclasses and JSON configuration loader
 ├── datasets/
-│   ├── processed/                        # Model-ready sanitized input datasets
-│   │   ├── candidate_bess_sites.csv      # 30 ranked substations with composite scores & cost factors
-│   │   ├── graph_theory_metrics.csv      # Degree, betweenness, closeness, and solar distance
-│   │   ├── grid_edges.csv                # 39 transmission lines with length, voltage & capacity
-│   │   ├── grid_nodes.csv                # 30 substations with coordinates & voltage ratings
-│   │   ├── optimization_profile.csv      # 744-hour demand and solar operational timeseries
-│   │   └── system_hourly_profile.csv     # Cleaned hourly system timeseries
+│   ├── processed/                                  # Formatted node/edge/metrics datasets
+│   │   ├── candidate_bess_sites.csv                # Composite suitability scores and ranking
+│   │   ├── graph_theory_metrics.csv                # Substation betweenness and closeness metrics
+│   │   ├── grid_edges.csv                          # Topological line branch definitions
+│   │   ├── grid_nodes.csv                          # 30-substation bus geographic definitions
+│   │   ├── optimization_profile.csv                # Hourly load, solar, and net demand profiles
+│   │   └── system_hourly_profile.csv               # 744-hour baseline dispatch time series
 │   ├── raw/
-│   │   ├── electricity/                  # Raw electricity demand timeseries
-│   │   ├── gis/                          # Transmission network spatial data
-│   │   │   ├── grid_substations.csv      # Substation coordinates and voltages
-│   │   │   ├── solar_power_plants.csv    # Utility solar plant coordinates and capacities
-│   │   │   ├── sri_lanka_boundaries.geojson # High-resolution Sri Lanka island polygon
-│   │   │   └── transmission_lines.csv    # Transmission corridor connectivity
-│   │   ├── official_report_csv/          # Verified official CEB statistical publications
-│   │   │   ├── ceb_base_case_solar_and_storage_additions_2025_2044.csv
-│   │   │   ├── ceb_electricity_sales_by_distribution_division_2024_2025.csv
-│   │   │   ├── ceb_existing_renewable_capacity_as_at_2023_12_31.csv
-│   │   │   ├── ceb_historical_electricity_demand_2009_2023.csv
-│   │   │   ├── ceb_installed_capacity_by_owner_and_type_2024_2025.csv
-│   │   │   ├── ceb_net_generation_by_owner_and_source_2024_2025.csv
-│   │   │   ├── ceb_rooftop_solar_scheme_exports_2024_2025.csv
-│   │   │   ├── ceb_summary_statistics_2024_2025.csv
-│   │   │   └── siyambalanduwa_solar_park_reference_record.csv
-│   │   └── solar/                        # NASA POWER hourly solar data
-│   │       └── nasa_power_hourly/        # Irradiance CSVs for stations SOL_01 to SOL_10
-│   └── templates/                        # Reusable data templates
-├── notebook/                             # 11 Sequential analysis notebooks
-├── results/                              # Research outputs
-│   ├── graphs/                           # Verified 300 DPI visualization figures
-│   │   ├── battery_charge_discharge.png  # Hourly battery dispatch dynamics
-│   │   ├── betweenness_centrality.png    # Substation betweenness centrality distribution
-│   │   ├── candidate_bess_sites.png      # Top candidate substations ranking
-│   │   ├── ceb_planned_solar_storage_additions.png # CEB LTGEP additions comparison
-│   │   ├── optimal_bess_sizing.png       # Optimal power and energy sizing
-│   │   ├── solar_curtailment.png         # Solar curtailment elimination
-│   │   ├── solar_vs_demand.png           # Hourly demand vs. solar profile
-│   │   ├── substation_evaluation_tradeoff.png # Centrality vs. solar distance trade-off
-│   │   └── transmission_network.png      # NetworkX grid topology graph
-│   ├── maps/                             # GIS geospatial mapping
-│   │   └── optimal_bess_location_map.png # Publication-grade siting map with metro inset
-│   ├── optimization/                     # Solved mathematical optimization outputs
-│   │   ├── battery_dispatch_results.csv  # 744-hour dispatch operational records
-│   │   ├── optimal_bess_locations.csv    # Selected site (Biyagama, 50 MW / 200 MWh)
-│   │   └── optimization_summary.csv      # Objective value & residual peak summary
-│   ├── sensitivity/                      # Sensitivity scenario outputs
-│   │   ├── battery_sensitivity.png       # Scenario comparison chart
-│   │   └── sensitivity_results.csv       # Scenario sweep records across CAPEX & penalties
-│   └── tables/                           # Summary reports & data audits
-│       ├── final_research_summary.csv    # Consolidated findings table
-│       └── official_data_inventory.csv   # CEB dataset audit records
-├── src/                                  # Core Python library
-│   ├── bess_optimization.py              # Pyomo MILP mathematical formulation & solver
-│   ├── data_cleaning.py                  # Timeseries cleaning and validation
-│   ├── data_validation.py                # Schema validators for GIS and timeseries
-│   ├── eda_tools.py                      # Exploratory data analysis utilities
-│   ├── graph_utils.py                    # NetworkX graph construction & candidate ranking
-│   └── paths.py                          # Robust project path resolvers
-├── LICENSE                               # MIT License
-├── README.md                             # Comprehensive Research Documentation
-└── requirements.txt                      # Python library dependencies
+│   │   ├── gis/                                    # Substation GIS coordinates, solar plants, line ratings
+│   │   ├── official_report_csv/                    # CEB Statistical Digest & LTGEP 2025-2044 base data
+│   │   └── solar/nasa_power_hourly/                # NASA POWER satellite irradiance observations
+│   └── templates/                                  # Schema templates for field grid additions
+├── notebook/
+│   ├── 00_Project_Setup.ipynb                      # Directory tree generation and data verification
+│   ├── 01_Official_Data_Collection_and_EDA.ipynb   # CEB official statistics extraction & LTGEP analysis
+│   ├── 02_Data_Cleaning_and_Validation.ipynb       # Range checks, missing value validation & outlier filtering
+│   ├── 03_Solar_Resource_Analysis.ipynb            # NASA POWER GHI/DNI profiling and PV potential estimation
+│   ├── 4_Grid_Network_Construction.ipynb           # NetworkX topological transmission graph formulation
+│   ├── 05_Graph_Theory_Analysis.ipynb              # Centrality calculations and vulnerability assessment
+│   ├── 06_BESS_Candidate_Site_Selection.ipynb      # Multi-criteria substation scoring and ranking
+│   ├── 07_BESS_Optimal_Placement_and_Sizing.ipynb  # Pyomo MILP formulation and HiGHS solver execution
+│   ├── 08_Optimization_Results_and_Visualization.ipynb # 744-hour dispatch curves and GIS map rendering
+│   ├── 09_Sensitivity_Analysis.ipynb               # CAPEX (±20%) and curtailment penalty (2x) stress testing
+│   └── 10_Final_Research_Results.ipynb             # Synthesis, scatter tradeoffs, and executive summary
+├── results/
+│   ├── graphs/                                     # High-resolution publication figures (.png)
+│   ├── maps/                                       # GIS spatial distribution maps (.png, .html)
+│   ├── optimization/                               # Solver solution outputs (.csv)
+│   ├── sensitivity/                                # Parametric robustness metrics (.csv)
+│   └── tables/                                     # Consolidated executive summaries (.csv)
+├── src/
+│   ├── __init__.py                                 # Package root initializer
+│   ├── bess_optimization.py                        # Pyomo MILP optimization engine and dispatch solver
+│   ├── data_validation.py                          # Schema checks, range assertions, and anomaly filters
+│   ├── graph_utils.py                              # NetworkX graph construction, metrics, and visualization
+│   ├── nasa_power.py                               # NASA POWER API client and solar profile builder
+│   └── paths.py                                    # Robust cross-platform project path resolution
+├── requirements.txt                                # Python dependency manifest
+└── README.md                                       # Comprehensive research documentation
 ```
 
 ---
