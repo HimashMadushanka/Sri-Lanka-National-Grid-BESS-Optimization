@@ -242,58 +242,6 @@ The research pipeline comprises 11 reproducible, self-contained Jupyter notebook
 
 ---
 
-## 📁 Repository Structure
-
-```text
-4G-Network-Coverage-Optimization/
-├── config/
-│   ├── __init__.py                                 # Configuration module initializer
-│   ├── model_config.json                           # Battery parameters, solver parameters, and weights
-│   └── parameters.py                               # Typed parameter dataclasses and JSON configuration loader
-├── datasets/
-│   ├── processed/                                  # Formatted node/edge/metrics datasets
-│   │   ├── candidate_bess_sites.csv                # Composite suitability scores and ranking
-│   │   ├── graph_theory_metrics.csv                # Substation betweenness and closeness metrics
-│   │   ├── grid_edges.csv                          # Topological line branch definitions
-│   │   ├── grid_nodes.csv                          # 30-substation bus geographic definitions
-│   │   ├── optimization_profile.csv                # Hourly load, solar, and net demand profiles
-│   │   └── system_hourly_profile.csv               # 744-hour baseline dispatch time series
-│   ├── raw/
-│   │   ├── gis/                                    # Substation GIS coordinates, solar plants, line ratings
-│   │   ├── official_report_csv/                    # CEB Statistical Digest & LTGEP 2025-2044 base data
-│   │   └── solar/nasa_power_hourly/                # NASA POWER satellite irradiance observations
-│   └── templates/                                  # Schema templates for field grid additions
-├── notebook/
-│   ├── 00_Project_Setup.ipynb                      # Directory tree generation and data verification
-│   ├── 01_Official_Data_Collection_and_EDA.ipynb   # CEB official statistics extraction & LTGEP analysis
-│   ├── 02_Data_Cleaning_and_Validation.ipynb       # Range checks, missing value validation & outlier filtering
-│   ├── 03_Solar_Resource_Analysis.ipynb            # NASA POWER GHI/DNI profiling and PV potential estimation
-│   ├── 4_Grid_Network_Construction.ipynb           # NetworkX topological transmission graph formulation
-│   ├── 05_Graph_Theory_Analysis.ipynb              # Centrality calculations and vulnerability assessment
-│   ├── 06_BESS_Candidate_Site_Selection.ipynb      # Multi-criteria substation scoring and ranking
-│   ├── 07_BESS_Optimal_Placement_and_Sizing.ipynb  # Pyomo MILP formulation and HiGHS solver execution
-│   ├── 08_Optimization_Results_and_Visualization.ipynb # 744-hour dispatch curves and GIS map rendering
-│   ├── 09_Sensitivity_Analysis.ipynb               # CAPEX (±20%) and curtailment penalty (2x) stress testing
-│   └── 10_Final_Research_Results.ipynb             # Synthesis, scatter tradeoffs, and executive summary
-├── results/
-│   ├── graphs/                                     # High-resolution publication figures (.png)
-│   ├── maps/                                       # GIS spatial distribution maps (.png, .html)
-│   ├── optimization/                               # Solver solution outputs (.csv)
-│   ├── sensitivity/                                # Parametric robustness metrics (.csv)
-│   └── tables/                                     # Consolidated executive summaries (.csv)
-├── src/
-│   ├── __init__.py                                 # Package root initializer
-│   ├── bess_optimization.py                        # Pyomo MILP optimization engine and dispatch solver
-│   ├── data_validation.py                          # Schema checks, range assertions, and anomaly filters
-│   ├── graph_utils.py                              # NetworkX graph construction, metrics, and visualization
-│   ├── nasa_power.py                               # NASA POWER API client and solar profile builder
-│   └── paths.py                                    # Robust cross-platform project path resolution
-├── requirements.txt                                # Python dependency manifest
-└── README.md                                       # Comprehensive research documentation
-```
-
----
-
 ## 🚀 Quickstart Guide
 
 ### 1. Prerequisites
